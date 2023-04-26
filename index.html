@@ -160,24 +160,36 @@
         </div>
     </div>
 
-    <script>
-        // Script de Delay
-        const min = 0; // Minutos
-        const sec = 5; // Segundos
-  
-        setTimeout(
-          () =>
-            document
-              .querySelectorAll(".delay") // Todos os blocos com class "delay" cairá no delay
-              .forEach((x) => x.classList.remove("delay")),
-          (min * 60 + sec) * 1000
-        );
-      </script>
-      <style>
-        .delay {
-          display: none !important; /* Forçando a área de Delay para não ser mostrada */
-        }
-      </style>
-</body>
+    <style>.delay {display: none;}</style>
+<script>
+const DELAY_TIME_IN_SECONDS = 796;
+const DELAY_ELEMENTS_CLASS = 'delay';
+
+let player;
+
+function showElements(className, value) {
+    for (const element of document.getElementsByClassName(className)) {
+        element.style.display = value;
+    }
+}
+
+function showElementsAfterDelay() {
+  const time = Math.floor(player.video.currentTime);
+  if (time >= DELAY_TIME_IN_SECONDS && player.paused == false) {
+    showElements(DELAY_ELEMENTS_CLASS, 'block');
+  }
+}
+
+window.onload = () => {
+    showElements(DELAY_ELEMENTS_CLASS, 'none');
+    const addFunctionShowElementsAfterDelay = setInterval(() => {
+      if (window.smartplayer.instances[0].mounted) {
+        player = window.smartplayer.instances[0];
+        player.events.events.timeupdate.push(showElementsAfterDelay);
+        clearInterval(addFunctionShowElementsAfterDelay);
+      }
+    }, 100)
+}
+</script>
 
 </html>
